@@ -31,8 +31,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define SERVO_MIN 5
-#define SERVO_MAX 25
+#define SERVO_MIN 10
+#define SERVO_MAX 20
 #define SERVO_CENTER 15
 #define PET_MODE 0
 #define PROTECT_MODE 1
@@ -60,6 +60,7 @@ static void MX_TIM2_Init(void);
 void ControlLaser(int state);
 void ControlFlashlight(int state);
 void SwitchMode(void);
+void ControlBuzzer(int state);
 void MoveServoToRandomPosition(void);
 void MoveServoToPosition(uint16_t position);
 void StartPWM(void);
@@ -252,10 +253,10 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_10, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : PA5 PA6 PA7 */
-  GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7;
+  /*Configure GPIO pins : PA5 PA6 PA7 PA10 */
+  GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_10;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -299,11 +300,25 @@ void ControlFlashlight(int state)
   if (state == 1)
   {
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
+    ControlBuzzer(1);
   }
   else
   {
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET);
+    ControlBuzzer(0);
   }
+}
+
+void ControlBuzzer(int state)
+{
+	if (state == 1)
+	{
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_SET);
+	}
+	else
+	{
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_RESET);
+	}
 }
 
 void MoveServoToRandomPosition(void)
